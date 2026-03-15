@@ -1,0 +1,54 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.9"
+          cache: "pip"
+
+      - name: Install System Dependencies
+        run: sudo apt-get update && sudo apt-get install -y libgomp1
+
+      - name: Install Python Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          # Instalamos as dependências de desenvolvimento para os testes e linting
+          pip install pytest flake8 httpx
+
+      - name: Lint with Flake8
+        run: |
+          # Para a execução se houver erros de sintaxe graves
+          flake8 src tests --count --select=E9,F63,F7,F82 --show-source --statistics
+          # Alertas de formatação (não param a build, apenas avisam)
+          flake8 src tests --count --exit-zero --max-complexity=10 --max-line-length=100 --statistics
+
+      - name: Run Tests with Pytest
+        run: |
+          # Corre todos os testes dentro da pasta /tests
+          pytest tests/ -v
+
+  docker-build-check:
+    runs-on: ubuntu-latest
+    needs: lint-and-test 
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Test Docker Build
+        run: docker build -t wms-forecast-api:ci-test .
