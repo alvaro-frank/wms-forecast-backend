@@ -128,3 +128,12 @@ The project includes a GitHub Actions workflow that automates the quality gate:
 - **Linting**: Ensures PEP8 compliance.
 - **Automated Testing**: Executes the full pytest suite on every push.
 - **Build Verification**: Ensures the Docker image builds successfully.
+
+## 🐳 Docker Support
+
+The application is optimized for containerization:
+
+- **Lightweight**: Uses `python:3.9-slim` to minimize image size and reduce the attack surface.
+- **Production-Ready**: Uses `uvicorn` as a high-performance ASGI server to handle asynchronous API requests.
+- **Isolated Inference**: The **XGBoost** and **Scikit-Learn** machine learning pipelines are CPU-optimized for efficient cloud deployment, requiring no heavy GPU drivers.
+- **Data Persistence**: Uses Docker volumes to ensure the local SQLite database (`data/api_forecast.db`) safely persists its history across container restarts.
