@@ -1,5 +1,6 @@
 import os
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from src.infrastructure.adapters.ingoing.routers import router, get_predict_use_case
 from src.infrastructure.adapters.outgoing.xgboost_predictor import XGBoostPredictorAdapter
 from src.infrastructure.adapters.outgoing.sqlite_repository import SQLiteHistoryRepository
@@ -32,6 +33,14 @@ app = FastAPI(
     title="WMS Forecast API",
     description="Clean Architecture XGBoost Inference API for Warehouse Demand",
     version="1.0.0"
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"], # Permite a origem do teu frontend Vite
+    allow_credentials=True,
+    allow_methods=["*"], # Permite todos os métodos HTTP (POST, GET, OPTIONS, etc)
+    allow_headers=["*"], # Permite todos os headers
 )
 
 # 5. Setup Dependency Injection for the Router
