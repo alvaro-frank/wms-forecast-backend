@@ -5,5 +5,10 @@ class ForecastRequestSchema(BaseModel):
     hierarchy: str = Field(..., description="Hierarchy ID of the product")
     date: str = Field(..., description="Target date for forecast (YYYY-MM-DD)")
 
+class HistoricalDataSchema(BaseModel):
+    date: str
+    quantity: float
+
 class ForecastResponseSchema(BaseModel):
     predicted_quantity: float
+    history: list[HistoricalDataSchema]
