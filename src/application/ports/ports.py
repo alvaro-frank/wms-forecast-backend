@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from src.application.dtos.dtos import ForecastRequestDTO, HistoricalDataDTO
 from src.domain.entities import ForecastContext, ForecastResult, HistoricalMovement
 
 class IForecastPredictor(ABC):
@@ -32,5 +33,12 @@ class IProductHistoryRepository(ABC):
     def get_history(self, brand: str, hierarchy: str, date: str) -> HistoricalMovement:
         """
         Retrieves the pre-calculated features (lags, ewmas) for a specific product and date.
+        """
+        pass
+    
+    def get_last_30_days(self, brand: str, hierarchy: str, target_date: str) -> list[HistoricalDataDTO]:
+        """
+        Retrieves the last 30 days of historical data for a specific product and date.
+        This is used to provide the historical context in the API response.
         """
         pass
