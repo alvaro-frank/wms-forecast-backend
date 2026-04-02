@@ -7,5 +7,11 @@ class ForecastRequestDTO:
     date: str
 
 @dataclass(frozen=True)
+class HistoricalDataDTO:
+    date: str
+    quantity: float
+
+@dataclass(frozen=True)
 class ForecastResponseDTO:
     predicted_quantity: float
+    history: list[HistoricalDataDTO]
