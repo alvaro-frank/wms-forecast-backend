@@ -1,5 +1,6 @@
 import sqlite3
 import pandas as pd
+from src.application.dtos.dtos import HistoricalDataDTO
 from src.application.ports.ports import IProductHistoryRepository
 from src.domain.entities import HistoricalMovement
 
@@ -43,3 +44,18 @@ class SQLiteHistoryRepository(IProductHistoryRepository):
             ewma_20=float(row.get('EWMA_20', 0)),
             ewma_50=float(row.get('EWMA_50', 0))
         )
+        
+    def get_last_30_days(self, brand: str, hierarchy: str, target_date: str) -> list[HistoricalDataDTO]:
+        query = """
+            SELECT date, quantity 
+            FROM history 
+            WHERE brand = ? AND PRODUCTHIERARCHY3 = ? AND date < ?
+            ORDER BY date DESC
+            LIMIT 30
+        """
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute(query, (brand, hierarchy, target_date))
+            rows = cursor.fetchall()
+            # Revertemos para vir por ordem cronológica (mais antigo -> mais recente)
+            return [HistoricalDataDTO(date=row[0], quantity=row[1]) for row in reversed(rows)]
